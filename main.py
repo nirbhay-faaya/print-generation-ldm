@@ -701,22 +701,26 @@ if __name__ == "__main__":
         # allow checkpointing via USR1
         def melk(*args, **kwargs):
             # run all checkpoint hooks
-            if trainer.global_rank == 0:
-                print("Summoning checkpoint.")
-                ckpt_path = os.path.join(ckptdir, "last.ckpt")
-                trainer.save_checkpoint(ckpt_path)
+            print("not summoning now.")
+            pass
+            # if trainer.global_rank == 0:
+            #     print("Summoning checkpoint.")
+            #     ckpt_path = os.path.join(ckptdir, "last.ckpt")
+            #     trainer.save_checkpoint(ckpt_path)
+            #     print("Checkpoint summoned.")
 
 
         def divein(*args, **kwargs):
-            if trainer.global_rank == 0:
-                import pudb;
-                pudb.set_trace()
+            pass
+            # if trainer.global_rank == 0:
+            #     import pudb;
+            #     pudb.set_trace()
 
 
-        import signal
+        # import signal
 
-        signal.signal(signal.SIGUSR1, melk)
-        signal.signal(signal.SIGUSR2, divein)
+        # signal.signal(signal.SIGUSR1, melk)
+        # signal.signal(signal.SIGUSR2, divein)
 
         # run
         if opt.train:
