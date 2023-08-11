@@ -126,8 +126,9 @@ class PatternTextToImageDataset():
 
 class PrintGenerationData(PatternTextToImageDataset):
     def __init__(self, **kwargs):
-        image_folder = "/home/ec2-user/dataset/dataset2/refined"
-        csv_folder = "/home/ec2-user/dataset/dataset2/tags_out"
+        root_path = kwargs['root_path']
+        image_folder = os.path.join(root_path,"dataset/dataset2/refined")
+        csv_folder = os.path.join(root_path,"dataset/dataset2/tags_out")
         csv_img_mapping = {
             'istock_African pattern fabric.csv':'African pattern fabric',
             'istock_batik motif fabric.csv':'batik motif fabric',
@@ -154,9 +155,9 @@ class PrintGenerationData(PatternTextToImageDataset):
         }
 
         additional_paths = [
-            '/home/ec2-user/dataset/dataset5',
-            '/home/ec2-user/dataset/dataset4',
-            '/home/ec2-user/dataset/dataset6'
+            os.path.join(root_path,'dataset/dataset5'),
+            os.path.join(root_path,'dataset/dataset4'),
+            os.path.join(root_path,'dataset/dataset6')
         ]
 
         img_transforms = transforms.Compose([
@@ -173,7 +174,7 @@ class PrintGenerationData(PatternTextToImageDataset):
         )
 
 if __name__ == "__main__":
-    pattern_data = PrintGenerationData(size=256)
+    pattern_data = PrintGenerationData(size=256, root_path='/root')
     input_data = pattern_data[0]
     print(input_data["image"].shape)
     print(input_data["caption"])

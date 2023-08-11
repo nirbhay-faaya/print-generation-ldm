@@ -80,6 +80,7 @@ data:
       target: ldm.data.pattern.PrintGenerationData
       params:
         size: 256
+        root_path: /root
 
 lightning:
   callbacks:
