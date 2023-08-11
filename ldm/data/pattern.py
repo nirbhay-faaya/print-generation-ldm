@@ -178,3 +178,4 @@ if __name__ == "__main__":
     input_data = pattern_data[0]
     print(input_data["image"].shape)
     print(input_data["caption"])
+    print(len(pattern_data))
