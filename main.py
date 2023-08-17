@@ -28,7 +28,7 @@ def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
     pl_sd = torch.load(ckpt, map_location="cpu")
     sd = pl_sd["state_dict"]
-    model = instantiate_from_config(config.model)
+    model = instantiate_from_config(config)
     m, u = model.load_state_dict(sd, strict=False)
     if len(m) > 0 and verbose:
         print("missing keys:")
@@ -557,8 +557,10 @@ if __name__ == "__main__":
         # model = instantiate_from_config(config.model)
         if '--ckpt' in sys.argv:
             ckpt_path = sys.argv[sys.argv.index('--ckpt') + 1]
+            print("===> loading pretrained model")
             model = load_model_from_config(config.model, ckpt=ckpt_path, verbose=True)
         else:
+            print("===> training ldm without pretrained model")
             model = instantiate_from_config(config.model)
 
         # trainer and callbacks
