@@ -24,6 +24,23 @@ from ldm.util import instantiate_from_config
 import warnings
 warnings.filterwarnings("ignore")
 
+def load_model_from_config(config, ckpt, verbose=False):
+    print(f"Loading model from {ckpt}")
+    pl_sd = torch.load(ckpt, map_location="cpu")
+    sd = pl_sd["state_dict"]
+    model = instantiate_from_config(config.model)
+    m, u = model.load_state_dict(sd, strict=False)
+    if len(m) > 0 and verbose:
+        print("missing keys:")
+        print(m)
+    if len(u) > 0 and verbose:
+        print("unexpected keys:")
+        print(u)
+
+    # model.cuda()
+    # model.eval()
+    return model
+
 def get_parser(**parser_kwargs):
     def str2bool(v):
         if isinstance(v, bool):
@@ -537,7 +554,12 @@ if __name__ == "__main__":
         lightning_config.trainer = trainer_config
 
         # model
-        model = instantiate_from_config(config.model)
+        # model = instantiate_from_config(config.model)
+        if '--ckpt' in sys.argv:
+            ckpt_path = sys.argv[sys.argv.index('--ckpt') + 1]
+            model = load_model_from_config(config.model, ckpt=ckpt_path, verbose=True)
+        else:
+            model = instantiate_from_config(config.model)
 
         # trainer and callbacks
         trainer_kwargs = dict()
