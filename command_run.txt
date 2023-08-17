@@ -1,0 +1,1 @@
+python main.py --base configs/latent-diffusion/txt2img-latent-diffusion.yaml --ckpt models/ldm/text2img_large/model.ckpt -t --gpus 0,
