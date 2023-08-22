@@ -8,8 +8,4 @@ run apt-get update && apt-get upgrade -y
 
 run apt-get install git -y
 
-run conda env create -f environment.yaml
-
-run conda activate ldm
-
-run pip install -r requirements.txt
+run conda env create -f ldm.yaml
