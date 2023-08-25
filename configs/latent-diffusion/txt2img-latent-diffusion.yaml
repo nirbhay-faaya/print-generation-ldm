@@ -77,10 +77,10 @@ data:
     num_workers: 5
     wrap: False
     train:
-      target: ldm.data.pattern.PrintGenerationData
+      target: ldm.data.pattern.PatternGenTextToImageDataset
       params:
         size: 256
-        root_path: /workspace/
+        root_path: /workspace/dataset
 
 lightning:
   callbacks:
