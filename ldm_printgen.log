@@ -1,13 +1,145 @@
-2023-08-25 10:00:14.722970: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+2023-08-25 14:51:37.461404: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-2023-08-25 10:00:15.465798: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+2023-08-25 14:51:38.250414: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
 Global seed set to 23
 GPU available: True, used: True
 TPU available: False, using: 0 TPU cores
 IPU available: False, using: 0 IPUs
-2023-08-25 10:00:44.435862: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-2023-08-25 10:00:45.185635: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
 Global seed set to 23
-initializing ddp: GLOBAL_RANK: 0, MEMBER: 1/2
-Global seed set to 23
+initializing ddp: GLOBAL_RANK: 0, MEMBER: 1/1
+----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All DDP processes registered. Starting ddp with 1 processes
+----------------------------------------------------------------------------------------------------
+
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1]
+
+  | Name              | Type             | Params
+-------------------------------------------------------
+0 | model             | DiffusionWrapper | 872 M 
+1 | first_stage_model | AutoencoderKL    | 83.7 M
+2 | cond_stage_model  | BERTEmbedder     | 581 M 
+-------------------------------------------------------
+1.5 B     Trainable params
+83.7 M    Non-trainable params
+1.5 B     Total params
+6,151.794 Total estimated model params size (MB)
+Running on GPUs 0,
+===> loading pretrained model
+Loading model from ../text2img_large/model.ckpt
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+making attention of type 'vanilla' with 512 in_channels
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+unexpected keys:
+['model_ema.decay', 'model_ema.num_updates']
+Monitoring val/loss_simple_ema as checkpoint metric.
+Merged modelckpt-cfg: 
+{'target': 'pytorch_lightning.callbacks.ModelCheckpoint', 'params': {'dirpath': 'logs/2023-08-25T14-51-39_txt2img-latent-diffusion/checkpoints', 'filename': '{epoch:06}', 'verbose': True, 'save_last': True, 'monitor': 'val/loss_simple_ema', 'save_top_k': 3}}
+#### Data #####
+train, PatternGenTextToImageDataset, 25779
+accumulate_grad_batches = 1
+Setting learning rate to 8.00e-04 = 1 (accumulate_grad_batches) * 1 (num_gpus) * 16 (batchsize) * 5.00e-05 (base_lr)
+LatentDiffusion: Also optimizing conditioner params!
+Project config
+model:
+  base_learning_rate: 5.0e-05
+  target: ldm.models.diffusion.ddpm.LatentDiffusion
+  params:
+    linear_start: 0.00085
+    linear_end: 0.012
+    num_timesteps_cond: 1
+    log_every_t: 200
+    timesteps: 1000
+    first_stage_key: image
+    cond_stage_key: caption
+    image_size: 32
+    channels: 4
+    cond_stage_trainable: true
+    conditioning_key: crossattn
+    monitor: val/loss_simple_ema
+    scale_factor: 0.18215
+    use_ema: false
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
+      params:
+        image_size: 32
+        in_channels: 4
+        out_channels: 4
+        model_channels: 320
+        attention_resolutions:
+        - 4
+        - 2
+        - 1
+        num_res_blocks: 2
+        channel_mult:
+        - 1
+        - 2
+        - 4
+        - 4
+        num_heads: 8
+        use_spatial_transformer: true
+        transformer_depth: 1
+        context_dim: 1280
+        use_checkpoint: true
+        legacy: false
+    first_stage_config:
+      target: ldm.models.autoencoder.AutoencoderKL
+      params:
+        embed_dim: 4
+        monitor: val/rec_loss
+        ddconfig:
+          double_z: true
+          z_channels: 4
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult:
+          - 1
+          - 2
+          - 4
+          - 4
+          num_res_blocks: 2
+          attn_resolutions: []
+          dropout: 0.0
+        lossconfig:
+          target: torch.nn.Identity
+    cond_stage_config:
+      target: ldm.modules.encoders.modules.BERTEmbedder
+      params:
+        n_embed: 1280
+        n_layer: 32
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 16
+    num_workers: 5
+    wrap: false
+    train:
+      target: ldm.data.pattern.PatternGenTextToImageDataset
+      params:
+        size: 256
+        root_path: /workspace/dataset
+--ckpt: null
+? ''
+: ? ''
+  : /text2img_large/model:
+      ckpt: null
+
+Lightning config
+callbacks:
+  image_logger:
+    target: main.ImageLogger
+    params:
+      batch_frequency: 5000
+      max_images: 8
+      increase_log_steps: false
+trainer:
+  benchmark: true
+  accelerator: ddp
+  gpus: 0,
+
+Validation sanity check: 0it [00:00, ?it/s]                                           Global seed set to 23
+Training: -1it [00:00, ?it/s]Training:   0%|          | 0/1612 [00:00<00:00, 42366.71it/s]Epoch 0:   0%|          | 0/1612 [00:00<00:00, 7219.11it/s]  Epoch 0:   0%|          | 1/1612 [00:19<4:17:31,  9.59s/it]Epoch 0:   0%|          | 1/1612 [00:19<4:17:32,  9.59s/it, loss=0.171, v_num=0, train/loss_simple_step=0.171, train/loss_vlb_step=0.00214, train/loss_step=0.171, global_step=0.000]Epoch 0:   0%|          | 2/1612 [00:20<3:02:45,  6.81s/it, loss=0.171, v_num=0, train/loss_simple_step=0.171, train/loss_vlb_step=0.00214, train/loss_step=0.171, global_step=0.000]Epoch 0:   0%|          | 2/1612 [00:20<3:02:45,  6.81s/it, loss=0.238, v_num=0, train/loss_simple_step=0.305, train/loss_vlb_step=0.00334, train/loss_step=0.305, global_step=1.000]Epoch 0:   0%|          | 3/1612 [00:21<2:25:20,  5.42s/it, loss=0.238, v_num=0, train/loss_simple_step=0.305, train/loss_vlb_step=0.00334, train/loss_step=0.305, global_step=1.000]Epoch 0:   0%|          | 3/1612 [00:21<2:25:20,  5.42s/it, loss=0.235, v_num=0, train/loss_simple_step=0.231, train/loss_vlb_step=0.00208, train/loss_step=0.231, global_step=2.000]Epoch 0:   0%|          | 4/1612 [00:22<2:02:57,  4.59s/it, loss=0.235, v_num=0, train/loss_simple_step=0.231, train/loss_vlb_step=0.00208, train/loss_step=0.231, global_step=2.000]Epoch 0:   0%|          | 4/1612 [00:22<2:02:57,  4.59s/it, loss=0.254, v_num=0, train/loss_simple_step=0.308, train/loss_vlb_step=0.00329, train/loss_step=0.308, global_step=3.000]Epoch 0:   0%|          | 5/1612 [00:24<1:48:00,  4.03s/it, loss=0.254, v_num=0, train/loss_simple_step=0.308, train/loss_vlb_step=0.00329, train/loss_step=0.308, global_step=3.000]Epoch 0:   0%|          | 5/1612 [00:24<1:48:00,  4.03s/it, loss=0.257, v_num=0, train/loss_simple_step=0.271, train/loss_vlb_step=0.0013, train/loss_step=0.271, global_step=4.000] Epoch 0:   0%|          | 6/1612 [00:25<1:37:17,  3.63s/it, loss=0.257, v_num=0, train/loss_simple_step=0.271, train/loss_vlb_step=0.0013, train/loss_step=0.271, global_step=4.000]Epoch 0:   0%|          | 6/1612 [00:25<1:37:17,  3.63s/it, loss=0.343, v_num=0, train/loss_simple_step=0.772, train/loss_vlb_step=0.00296, train/loss_step=0.772, global_step=5.000]Epoch 0:   0%|          | 7/1612 [00:26<1:29:16,  3.34s/it, loss=0.343, v_num=0, train/loss_simple_step=0.772, train/loss_vlb_step=0.00296, train/loss_step=0.772, global_step=5.000]Epoch 0:   0%|          | 7/1612 [00:26<1:29:16,  3.34s/it, loss=0.345, v_num=0, train/loss_simple_step=0.359, train/loss_vlb_step=0.00164, train/loss_step=0.359, global_step=6.000]Epoch 0:   0%|          | 8/1612 [00:28<1:23:34,  3.13s/it, loss=0.345, v_num=0, train/loss_simple_step=0.359, train/loss_vlb_step=0.00164, train/loss_step=0.359, global_step=6.000]Epoch 0:   0%|          | 8/1612 [00:28<1:23:34,  3.13s/it, loss=0.365, v_num=0, train/loss_simple_step=0.500, train/loss_vlb_step=0.002, train/loss_step=0.500, global_step=7.000]  Epoch 0:   1%|          | 9/1612 [00:29<1:18:30,  2.94s/it, loss=0.365, v_num=0, train/loss_simple_step=0.500, train/loss_vlb_step=0.002, train/loss_step=0.500, global_step=7.000]Epoch 0:   1%|          | 9/1612 [00:29<1:18:30,  2.94s/it, loss=0.423, v_num=0, train/loss_simple_step=0.891, train/loss_vlb_step=0.0046, train/loss_step=0.891, global_step=8.000]Epoch 0:   1%|          | 10/1612 [00:30<1:14:22,  2.79s/it, loss=0.423, v_num=0, train/loss_simple_step=0.891, train/loss_vlb_step=0.0046, train/loss_step=0.891, global_step=8.000]Epoch 0:   1%|          | 10/1612 [00:30<1:14:22,  2.79s/it, loss=0.498, v_num=0, train/loss_simple_step=1.170, train/loss_vlb_step=0.00819, train/loss_step=1.170, global_step=9.000]Epoch 0:   1%|          | 11/1612 [00:31<1:10:55,  2.66s/it, loss=0.498, v_num=0, train/loss_simple_step=1.170, train/loss_vlb_step=0.00819, train/loss_step=1.170, global_step=9.000]Epoch 0:   1%|          | 11/1612 [00:31<1:10:55,  2.66s/it, loss=0.55, v_num=0, train/loss_simple_step=1.070, train/loss_vlb_step=0.00488, train/loss_step=1.070, global_step=10.00] 
