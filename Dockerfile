@@ -1,6 +1,6 @@
 from pytorch/pytorch
 
-workdir /workspace
+workdir /workspace/ldm
 
 copy . /workspace/ldm
 
