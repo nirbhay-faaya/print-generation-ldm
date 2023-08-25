@@ -5,3 +5,7 @@ __pycache__/
 *.pth
 
 src/
+
+onstart.log
+onstart.sh
+ports.log
